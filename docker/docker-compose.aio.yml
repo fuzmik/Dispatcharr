@@ -35,7 +35,14 @@ services:
     #              - driver: nvidia
     #                count: all
     #                capabilities: [gpu]
-
+    networks:
+      cosmos-dispatcharr-default:
 
 volumes:
   dispatcharr_data:
+    name: dispatcharr_data
+    external: false
+networks:
+  cosmos-dispatcharr-default:
+    name: cosmos-dispatcharr-default
+    external: false
