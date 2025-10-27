@@ -4,7 +4,7 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "REPLACE_ME_WITH_A_REAL_SECRET"
+SECRET_KEY = os.environ.get("SECRET_KEY", "REPLACE_ME_WITH_A_REAL_SECRET")
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
 REDIS_DB = os.environ.get("REDIS_DB", "0")
 
@@ -14,7 +14,7 @@ if os.environ.get("DISPATCHARR_DEBUG", "False").lower() == "true":
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "*").split(',')
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 INSTALLED_APPS = [
@@ -224,7 +224,7 @@ MEDIA_URL = "/media/"
 
 SERVER_IP = "127.0.0.1"
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = os.environ.get("CORS_ALLOW_ALL_ORIGINS", "True").lower() == "true"
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = ["http://*", "https://*"]
 APPEND_SLASH = True

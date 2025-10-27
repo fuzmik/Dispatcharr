@@ -5,10 +5,12 @@ services:
     #   dockerfile: Dockerfile
     image: ghcr.io/dispatcharr/dispatcharr:latest
     container_name: dispatcharr
+    ipc: host
     ports:
-      - 127.0.0.1::9191/tcp
+      - 0.0.0.0::9191/tcp
       - 127.0.0.1::8001/tcp
       - 127.0.0.1::5656/tcp
+      - 127.0.0.1::6379/tcp
     volumes:
       - dispatcharr_data:/data
     environment:
@@ -16,35 +18,43 @@ services:
       - REDIS_HOST=localhost
       - CELERY_BROKER_URL=redis://localhost:6379/0
       - DISPATCHARR_LOG_LEVEL=info
+      - DISPATCHARR_PORT=9191
+      - PUID=1000
+      - PGID=1000
       # Process Priority Configuration (Optional)
       # Lower values = higher priority. Range: -20 (highest) to 19 (lowest)
       # Negative values require cap_add: SYS_NICE (uncomment below)
-      - UWSGI_NICE_LEVEL=-5   # uWSGI/FFmpeg/Streaming (default: 0, recommended: -5 for high priority)
-      - CELERY_NICE_LEVEL=5   # Celery/EPG/Background tasks (default: 5, low priority)
-    #
-    # Uncomment to enable high priority for streaming (required if UWSGI_NICE_LEVEL < 0)
+      - "UWSGI_NICE_LEVEL=-5"   # uWSGI/FFmpeg/Streaming (default: 0, recommended: -5 for high priority)
+      - "CELERY_NICE_LEVEL=5"   # Celery/EPG/Background tasks (default: 5, low priority)
+      - SECRET_KEY=${SECRET_KEY}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - CORS_ALLOW_ALL_ORIGINS=${CORS_ALLOW_ALL_ORIGINS}
+      - TIME_ZONE=${TZ}
     cap_add:
       - SYS_NICE
-    # Optional for hardware acceleration
+      # Optional for hardware acceleration
     devices:
       - /dev/dri:/dev/dri  # For Intel/AMD GPU acceleration (VA-API)
-    # Uncomment the following lines for NVIDIA GPU support
-    # NVidia GPU support (requires NVIDIA Container Toolkit)
-    #deploy:
-    #  resources:
-    #      reservations:
-    #          devices:
-    #              - driver: nvidia
-    #                count: all
-    #                capabilities: [gpu]
+       # Uncomment the following lines for NVIDIA GPU support
+       # NVidia GPU support (requires NVIDIA Container Toolkit)
+       #deploy:
+       #  resources:
+       #      reservations:
+       #          devices:
+       #              - driver: nvidia
+       #                count: all
+       #                capabilities: [gpu]
     networks:
       cosmos-dispatcharr-default:
+
+networks:
+  cosmos-dispatcharr-default:
+    name: cosmos-dispatcharr-default
+    external: false
+    driver: bridge
 
 volumes:
   dispatcharr_data:
     name: dispatcharr_data
     external: false
-networks:
-  cosmos-dispatcharr-default:
-    name: cosmos-dispatcharr-default
-    external: false
+    driver: local
