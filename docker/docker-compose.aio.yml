@@ -1,8 +1,8 @@
 services:
   dispatcharr:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     image: ghcr.io/dispatcharr/dispatcharr:latest
     container_name: dispatcharr
     ipc: host
