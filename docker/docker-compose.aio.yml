@@ -6,7 +6,9 @@ services:
     image: ghcr.io/dispatcharr/dispatcharr:latest
     container_name: dispatcharr
     ports:
-      - 9191:9191
+      - 127.0.0.1::9191/tcp
+      - 127.0.0.1::8001/tcp
+      - 127.0.0.1::5656/tcp
     volumes:
       - dispatcharr_data:/data
     environment:
@@ -17,15 +19,15 @@ services:
       # Process Priority Configuration (Optional)
       # Lower values = higher priority. Range: -20 (highest) to 19 (lowest)
       # Negative values require cap_add: SYS_NICE (uncomment below)
-      #- UWSGI_NICE_LEVEL=-5   # uWSGI/FFmpeg/Streaming (default: 0, recommended: -5 for high priority)
-      #- CELERY_NICE_LEVEL=5   # Celery/EPG/Background tasks (default: 5, low priority)
+      - UWSGI_NICE_LEVEL=-5   # uWSGI/FFmpeg/Streaming (default: 0, recommended: -5 for high priority)
+      - CELERY_NICE_LEVEL=5   # Celery/EPG/Background tasks (default: 5, low priority)
     #
     # Uncomment to enable high priority for streaming (required if UWSGI_NICE_LEVEL < 0)
-    #cap_add:
-    #  - SYS_NICE
+    cap_add:
+      - SYS_NICE
     # Optional for hardware acceleration
-    #devices:
-    #  - /dev/dri:/dev/dri  # For Intel/AMD GPU acceleration (VA-API)
+    devices:
+      - /dev/dri:/dev/dri  # For Intel/AMD GPU acceleration (VA-API)
     # Uncomment the following lines for NVIDIA GPU support
     # NVidia GPU support (requires NVIDIA Container Toolkit)
     #deploy:
